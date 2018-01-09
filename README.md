@@ -5,3 +5,4 @@
   Then if this file exists in a archive, ZipAdder replaces content of this file by content
   of our file. If file doesn't exists, ZipAdder creates a directory 'new' and puts file there.
  
+п
