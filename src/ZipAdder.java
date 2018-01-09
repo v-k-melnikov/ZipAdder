@@ -51,6 +51,7 @@ public class ZipAdder {
             map.put(entry, arr);
         }
         zipInput.close();
+
         // Adds our file to archive
 
         ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(zipArchiveAbsolutePath));
