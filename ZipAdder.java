@@ -1,4 +1,3 @@
-package com.javarush.task.task31.task3105;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,7 +51,7 @@ public class ZipAdder {
             map.put(entry, arr);
         }
         zipInput.close();
-        // Adds our file into archive
+        // Adds our file to archive
 
         ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(zipArchiveAbsolutePath));
         if (fileExist) {
