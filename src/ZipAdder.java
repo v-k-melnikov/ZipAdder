@@ -18,6 +18,8 @@ import java.util.zip.ZipOutputStream;
  * of our file. If file doesn't exists, ZipAdder creates a directory 'new' and puts file there.
  **/
 //sdfasdf
+//1
+    //2
 public class ZipAdder {
 
     public static void main(String[] args) throws IOException {
