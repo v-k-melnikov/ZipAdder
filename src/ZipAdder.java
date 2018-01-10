@@ -6,63 +6,72 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-/**
- * ZipAdder reads the zip file specified as a second parameter using ZipInputStream,
- * checks the existing file with name like a name of our file specified as a first parameter.
- * Then if this file exists in a archive, ZipAdder replaces content of this file by content
- * of our file. If file doesn't exists, ZipAdder creates a directory 'new' and puts file there.
- **/
+
 
 public class ZipAdder {
 
-    public static void main(String[] args) throws IOException {
+    /**
+     * Reads the zip file specified as a second parameter using ZipInputStream,
+     * checks the existing files with name like a name of our file specified as a first parameter.
+     * Then if this file(s) exists in a archive, replaces content of this file(s) by content
+     * of our file. If file doesn't exists, puts file to the base directory.
+     *
+     * @param filepath The file to be added
+     *
+     * @param zipFile The archive to be modified
+     *
+     * @throws IOException
+     */
+    public void add(String filepath, String zipFile) throws IOException {
 
         ZipEntry entry;
-        String fileOutput = "";
 
-        // Maps the zip file passed as argument 2
-        String zipArchiveAbsolutePath = args[1];
         boolean fileExist = false;
-        ZipInputStream zipInput = new ZipInputStream(new FileInputStream(zipArchiveAbsolutePath));
+        ZipInputStream zipInput = new ZipInputStream(new FileInputStream(zipFile));
         Map<ZipEntry, ArrayList<Byte>> map = new HashMap<>();
         String nextFileName;
-        File fileToAdd = new File(args[0]);
+        File fileToAdd = new File(filepath);
+        List<String> listOfPaths = new ArrayList<>();
         while ((entry = zipInput.getNextEntry()) != null) {
-            // Gets the name of next file in archive
+            // compares the name of next file in archive with the name of our file
             try {
                 nextFileName = entry.getName().substring(entry.getName().lastIndexOf("/") + 1);
             } catch (StringIndexOutOfBoundsException ex) {
-                nextFileName = entry.getName(); // If file doesn't places in directory
+                nextFileName = entry.getName(); // if file doesn't place in directory
             }
             if (nextFileName.equals(fileToAdd.getName())) {
-                fileOutput = entry.getName();   // Remembers the path of file
+                String fileOutput = entry.getName();   // remembers the path of the file
+                listOfPaths.add(fileOutput);
                 fileExist = true;
-                continue;         // Ignores the file with name like our file
+                continue;         // ignores the file with name like our file
             }
-            ArrayList<Byte> arr = new ArrayList<>();
+            // maps zip file
+            ArrayList<Byte> content = new ArrayList<>();
             while (zipInput.available() > 0) {
-                arr.add((byte) zipInput.read());
+                content.add((byte) zipInput.read());
             }
-            map.put(entry, arr);
+            map.put(entry, content);
         }
         zipInput.close();
 
-        // Adds our file to archive
+        // adds our file to archive
 
-        ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(zipArchiveAbsolutePath));
+        ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(zipFile));
         if (fileExist) {
-            zipOutput.putNextEntry(new ZipEntry(fileOutput));
-            Files.copy(fileToAdd.toPath(), zipOutput);
+            for (String path : listOfPaths){
+            zipOutput.putNextEntry(new ZipEntry(path));
+            Files.copy(fileToAdd.toPath(), zipOutput);}
         } else {
-            zipOutput.putNextEntry(new ZipEntry("new/" + fileToAdd.getName()));
+            zipOutput.putNextEntry(new ZipEntry(fileToAdd.getName()));
             Files.copy(fileToAdd.toPath(), zipOutput);
         }
-        // Writes archive from map
+        // writes archive from a map
         for (Map.Entry<ZipEntry, ArrayList<Byte>> l : map.entrySet()) {
             byte[] ar = new byte[l.getValue().size()];
             for (int i = 0; i < l.getValue().size() - 1; i++) {
@@ -74,6 +83,8 @@ public class ZipAdder {
         }
         zipOutput.close();
     }
+
+
 }
 
 
