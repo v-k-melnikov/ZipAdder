@@ -13,7 +13,6 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 
-
 public class ZipAdder {
 
     /**
@@ -23,10 +22,8 @@ public class ZipAdder {
      * of our file. If file doesn't exists, puts file to the base directory.
      *
      * @param filepath The file to be added
-     *
-     * @param zipFile The archive to be modified
-     *
-     * @throws IOException
+     * @param zipFile  The archive to be modified
+     * @throws IOException stream exceptions
      */
     public void add(String filepath, String zipFile) throws IOException {
 
@@ -64,9 +61,10 @@ public class ZipAdder {
 
         ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(zipFile));
         if (fileExist) {
-            for (String path : listOfPaths){
-            zipOutput.putNextEntry(new ZipEntry(path));
-            Files.copy(fileToAdd.toPath(), zipOutput);}
+            for (String path : listOfPaths) {
+                zipOutput.putNextEntry(new ZipEntry(path));
+                Files.copy(fileToAdd.toPath(), zipOutput);
+            }
         } else {
             zipOutput.putNextEntry(new ZipEntry(fileToAdd.getName()));
             Files.copy(fileToAdd.toPath(), zipOutput);
